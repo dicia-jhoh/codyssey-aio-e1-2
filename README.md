@@ -177,6 +177,31 @@ python3 main.py
 - `Ctrl+C` 나 `Ctrl+D`(입력 끝)를 눌러도 오류 화면 없이 **저장 후 종료**한다.
 - 데이터 파일은 `main.py` 옆의 `state.json`. 지우면 다음 실행 때 기본 퀴즈로 다시 시작한다.
 
+**자동 테스트** — 사람이 키를 치지 않고 핵심 동작을 확인한다(표준 라이브러리 `unittest`, 설치 없음).
+
+```bash
+# tests/ 폴더의 테스트를 전부 실행 (Windows 는 python -m unittest …)
+python3 -m unittest discover -s tests -v
+```
+```text
+test_blank_text_out_of_range_then_valid (test_quiz_game.AskIntTest...) ... ok
+test_added_quiz_and_best_score_survive_restart (test_quiz_game.PersistenceTest...) ... ok
+test_broken_file_is_kept_and_defaults_load (test_quiz_game.PersistenceTest...) ... ok
+test_first_run_has_default_quizzes_and_saves (test_quiz_game.PersistenceTest...) ... ok
+test_is_correct_and_validation (test_quiz_game.QuizTest...) ... ok
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+OK
+```
+| 테스트 | 무엇을 코드로 확인하나 |
+|---|---|
+| `AskIntTest` | 빈 입력 → 문자(`abc`) → 범위 밖(`9`) 을 차례로 넣으면 안내만 하고 다시 묻다가, 공백 섞인 ` 3 ` 을 3 으로 받는다 |
+| `QuizTest` | 정답·오답 판정, 선택지 3개·정답 5번 같은 잘못된 퀴즈는 만들 때 거절 |
+| `PersistenceTest` | 첫 실행 기본 퀴즈 5개 이상·저장, 추가한 퀴즈와 최고 점수가 재실행 뒤에도 남음, 깨진 `state.json` 은 `.broken` 으로 보관하고 기본 퀴즈로 복구 |
+
+입력은 `read=input` 자리에 가짜 키보드(`feeder`)를 끼워 넣고, 파일은 임시 폴더를 써서 진짜 `state.json` 을 건드리지 않는다.
+
 ## 🧩 4. 기능 목록
 
 > 🧒 메뉴 번호 6개가 각각 무슨 일을 하는지, 그리고 **잘못 쳤을 때 프로그램이 어떻게 버티는지**를 표로 모았다.
@@ -238,6 +263,7 @@ python3 main.py
 │   ├── storage.py       # StateStore 클래스 — state.json 읽기·쓰기·손상 복구
 │   ├── inputs.py        # 공통 입력 검증(ask_int, ask_text)
 │   └── defaults.py      # 기본 퀴즈 7개
+├── tests/               # 자동 테스트(unittest) — 입력 검증·채점·저장·손상 복구
 └── docs/screenshots/    # 실행 화면
 ```
 클래스 3개가 역할을 나눈다: **Quiz**(데이터 한 건) · **QuizGame**(게임 진행) · **StateStore**(파일 저장).
