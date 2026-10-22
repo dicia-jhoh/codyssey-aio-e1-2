@@ -362,7 +362,48 @@ gitGraph
     commit id: "Feat: 보너스 5종"
     commit id: "Docs: README·스크린샷"
 ```
-<sub>주요 커밋만 추린 그림이다. 전체 24개는 아래 `git log --oneline --graph` 캡처에 있다.</sub>
+<sub>주요 커밋만 추린 그림이다. 전체 기록은 아래 실제 출력과 [GitHub 커밋 목록](https://github.com/dicia-jhoh/codyssey-aio-e1-2/commits/main)에 있다.</sub>
+
+실제 기록 — 이 문서를 고친 커밋까지 포함해 `main` 에 커밋 31개, `feature/play` 갈래가 병합된 선이 보인다(맨 위 1줄은 이 출력을 넣은 커밋이라 아래에는 없다).
+
+<details>
+<summary>터미널에서 <code>git log --oneline --graph --all</code> 실행 결과 펼치기</summary>
+
+```text
+* 099ee8a Docs: 자동 테스트 실행법과 테스트가 확인하는 것
+* ec20b04 Test: 입력 검증·채점·재실행 유지·손상 복구를 unittest 로 확인
+* 3f70509 Docs: 심층 인터뷰 — 책임 분리·JSON 한계(1000개+)·손상 복구·변경 시 수정 위치(세이AI 지적 반영)
+* 27fe37b Docs: 따라 하기에 GitHub 저장소 주소
+* 5d8c00b Docs: 이모지 제목으로 가는 목차 링크를 GitHub 앵커 규칙대로 고침
+* 7338771 Docs: README 를 처음 하는 사람도 따라 하게 — 쉽게 말하면·준비물·단계별 따라 하기·쉬운 용어 사전
+* c2f3198 Docs: README 리치하게 — 머리 배지·목차·클래스 다이어그램·Git 그래프·복제 실습 시퀀스·알림 박스, 예외 처리 표 보강
+* df71439 Fix: 읽을 수 없는 state.json 을 기본 퀴즈로 덮어쓰던 데이터 유실 막기
+* 28b71c3 Docs: 개발 환경·git log --graph 스크린샷 추가
+* 8212184 Docs: 복제 실습(clone → push → pull) 기록을 README 9절로 정리
+* 487f157 Docs: 복제본에서 README 한 줄 추가(clone·push 실습)
+* 71de2e4 Docs: README — 개요·주제 선정 이유·실행 방법·기능 목록·파일 구조·state.json 스키마·설명
+* cff0634 Docs: 실행 화면 스크린샷 4종(메뉴·풀기·추가·점수)
+* 6d4071f Fix: 기록이 5회 미만일 때 「최근 5회」로 잘못 표시되던 문구 수정
+* dab7956 Feat: 보너스 — 점수 기록 히스토리(날짜·푼 수·정답 수·힌트·점수)
+* 6842bee Feat: 보너스 — 퀴즈 삭제(번호 선택, 0 은 취소) 후 파일 반영
+* 2526b46 Feat: 보너스 — 힌트 기능(사용 시 그 문제 배점 절반)
+* bd319aa Feat: 보너스 — 문제 순서 무작위 + 풀 문제 수 선택
+* c8671b6 Refactor: QuizGame 메뉴를 (이름, 메서드) 표 하나로 정리
+* ff57d73 Fix: Ctrl+C·입력 끝(EOF)에도 저장 후 안전하게 종료
+* 594f167 Feat: state.json 저장·불러오기와 손상 파일 복구
+* b156d6c Feat: 점수 확인 — 풀 때마다 최고 점수와 비교해 갱신
+* 00bc90c Feat: 퀴즈 목록 — 번호와 문제 표시, 비어 있으면 안내
+* 5f199a5 Feat: 퀴즈 추가 — 문제·선택지 4개·정답 번호 입력과 검증
+*   824d107 Merge: feature/play — 퀴즈 풀기 기능을 main 에 병합
+|\  
+| * 3ee1afb Feat: 퀴즈 풀기 — 차례로 출제·정답 확인·결과 점수 표시
+|/  
+* b3b0c31 Feat: 기본 퀴즈 데이터 7개 작성 — AI·개발 기초 상식
+* b185349 Feat: Quiz 클래스 구현 — 문제·선택지·정답 검사와 출력·정답 확인
+* 6f5e02f Feat: 메뉴 출력과 공통 입력 검증 구현
+* 885ea94 Docs: 프로젝트 README 초안과 .gitignore 추가
+```
+</details>
 
 | Git 명령 | 이 저장소에서 쓴 곳 |
 |---|---|
