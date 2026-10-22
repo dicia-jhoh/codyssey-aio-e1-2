@@ -9,7 +9,14 @@ STATE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state.jso
 
 
 def main():
-    QuizGame(StateStore(STATE_PATH)).run()
+    game = QuizGame(StateStore(STATE_PATH))
+    try:
+        game.run()
+    except (KeyboardInterrupt, EOFError):
+        # Ctrl+C 나 입력 끝(Ctrl+D·파이프 종료)에도 트레이스백 대신 저장하고 끝낸다
+        print()
+        print("⚠️ 입력이 중단되어 지금까지의 내용을 저장하고 종료합니다.")
+        game.save()
 
 
 if __name__ == "__main__":
