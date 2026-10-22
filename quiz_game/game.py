@@ -1,5 +1,7 @@
 """게임 진행 — 메뉴를 보여 주고 고른 기능을 실행한다."""
 
+import random
+
 from .defaults import default_quizzes
 from .inputs import ask_int, ask_text
 from .quiz import Quiz
@@ -20,9 +22,10 @@ class QuizGame:
         ("종료", None),
     )
 
-    def __init__(self, store, read=input):
+    def __init__(self, store, read=input, rng=None):
         self.store = store
         self.read = read
+        self.rng = rng or random.Random()  # 테스트에서는 시드를 고정한 Random 을 넣는다
         self.quizzes = []
         self.best = None  # {"score": 점수, "correct": 맞힌 수, "total": 푼 수} — 아직 안 풀었으면 None
 
@@ -83,9 +86,11 @@ class QuizGame:
         if not self.quizzes:
             print("📭 등록된 퀴즈가 없습니다. 2번 메뉴에서 먼저 퀴즈를 추가하세요.")
             return
-        order = list(self.quizzes)
+        total = len(self.quizzes)
+        count = ask_int(f"몇 문제를 풀까요? (1-{total}): ", 1, total, self.read)
+        order = self.rng.sample(self.quizzes, count)  # 순서를 섞고 count 개만 뽑는다
         print()
-        print(f"📝 퀴즈를 시작합니다! (총 {len(order)}문제)")
+        print(f"📝 퀴즈를 시작합니다! (총 {count}문제, 순서는 무작위)")
         correct = 0
         for number, quiz in enumerate(order, 1):
             print(THIN)
