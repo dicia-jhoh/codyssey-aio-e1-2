@@ -78,5 +78,6 @@
       "hint": "5 = 4(읽기) + 1(실행)"
     }
   ],
-  "best_score": null
+  "best_score": null,
+  "history": []
 }
