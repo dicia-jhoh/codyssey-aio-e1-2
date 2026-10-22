@@ -1,7 +1,8 @@
 """게임 진행 — 메뉴를 보여 주고 고른 기능을 실행한다."""
 
 from .defaults import default_quizzes
-from .inputs import ask_int
+from .inputs import ask_int, ask_text
+from .quiz import Quiz
 
 LINE = "=" * 40
 THIN = "-" * 40
@@ -25,6 +26,8 @@ class QuizGame:
                 return
             if choice == 1:
                 self.play()
+            elif choice == 2:
+                self.add_quiz()
             else:
                 print(f"🚧 「{self.MENU[choice - 1]}」 기능은 준비 중입니다.")
 
@@ -59,3 +62,19 @@ class QuizGame:
         print(LINE)
         print(f"🏆 결과: {len(order)}문제 중 {correct}문제 정답! ({score}점)")
         print(LINE)
+
+    def add_quiz(self):
+        """문제·선택지 4개·정답 번호를 받아 새 퀴즈를 등록한다."""
+        print()
+        print("📌 새로운 퀴즈를 추가합니다.")
+        question = ask_text("문제를 입력하세요: ", self.read)
+        choices = []
+        while len(choices) < Quiz.CHOICE_COUNT:
+            choice = ask_text(f"선택지 {len(choices) + 1}: ", self.read)
+            if choice in choices:
+                print("⚠️ 앞의 선택지와 같습니다. 다른 내용을 입력하세요.")
+                continue
+            choices.append(choice)
+        answer = ask_int(f"정답 번호 (1-{Quiz.CHOICE_COUNT}): ", 1, Quiz.CHOICE_COUNT, self.read)
+        self.quizzes.append(Quiz(question, choices, answer))
+        print("✅ 퀴즈가 추가되었습니다!")
