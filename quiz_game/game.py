@@ -1,6 +1,7 @@
 """게임 진행 — 메뉴를 보여 주고 고른 기능을 실행한다."""
 
 import random
+import time
 
 from .defaults import default_quizzes
 from .inputs import ask_int, ask_text
@@ -9,6 +10,7 @@ from .quiz import Quiz
 LINE = "=" * 40
 THIN = "-" * 40
 HINT_RATE = 0.5  # 힌트를 본 문제는 맞혀도 배점의 절반만 준다
+HISTORY_SHOWN = 5  # 점수 확인에서 보여 줄 최근 기록 수
 
 
 class QuizGame:
@@ -30,6 +32,7 @@ class QuizGame:
         self.rng = rng or random.Random()  # 테스트에서는 시드를 고정한 Random 을 넣는다
         self.quizzes = []
         self.best = None  # {"score": 점수, "correct": 맞힌 수, "total": 푼 수} — 아직 안 풀었으면 None
+        self.history = []  # 게임마다 {"played_at", "total", "correct", "hints", "score"}
 
     def load(self):
         """state.json 을 읽는다. 없거나 망가졌으면 기본 퀴즈로 시작하고 바로 저장한다."""
@@ -38,6 +41,7 @@ class QuizGame:
             print(message)
             self.quizzes = default_quizzes()
             self.best = None
+            self.history = []
             self.save()
             return
         self.quizzes = []
@@ -48,6 +52,8 @@ class QuizGame:
             except ValueError:
                 skipped += 1
         self.best = data.get("best_score") if _is_best(data.get("best_score")) else None
+        history = data.get("history", [])
+        self.history = [h for h in history if isinstance(h, dict)] if isinstance(history, list) else []
         best_text = f"{self.best['score']}점" if self.best else "기록 없음"
         print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고점수 {best_text})")
         if skipped:
@@ -60,7 +66,11 @@ class QuizGame:
         return ok
 
     def to_state(self):
-        return {"quizzes": [quiz.to_dict() for quiz in self.quizzes], "best_score": self.best}
+        return {
+            "quizzes": [quiz.to_dict() for quiz in self.quizzes],
+            "best_score": self.best,
+            "history": self.history,
+        }
 
     def run(self):
         self.load()
@@ -94,19 +104,21 @@ class QuizGame:
         print()
         print(f"📝 퀴즈를 시작합니다! (총 {count}문제, 순서는 무작위)")
         correct = 0
+        hints = 0
         earned = 0.0
         per_question = 100 / count
         for number, quiz in enumerate(order, 1):
             print(THIN)
             quiz.display(number)
             answer, used_hint = self.ask_answer(quiz)
+            hints += used_hint
             if quiz.is_correct(answer):
                 correct += 1
                 earned += per_question * (HINT_RATE if used_hint else 1)
                 print("✅ 정답입니다!" + (" (힌트 사용 — 배점 절반)" if used_hint else ""))
             else:
                 print(f"❌ 오답입니다. 정답은 {quiz.answer_text()} 입니다.")
-        self.record_result(round(earned), correct, count)
+        self.record_result(round(earned), correct, count, hints)
 
     def ask_answer(self, quiz):
         """정답 번호를 받는다. 힌트가 있는 문제는 0 을 넣으면 힌트를 한 번 보여 준다."""
@@ -121,14 +133,21 @@ class QuizGame:
             used_hint = True
             print(f"💡 힌트: {quiz.hint} (이 문제는 맞혀도 배점의 절반만 받습니다)")
 
-    def record_result(self, score, correct, total):
-        """결과를 보여 주고 최고 점수보다 높으면 갱신한다."""
+    def record_result(self, score, correct, total, hints=0):
+        """결과를 보여 주고, 기록에 남기고, 최고 점수보다 높으면 갱신한다."""
         print(LINE)
         print(f"🏆 결과: {total}문제 중 {correct}문제 정답! ({score}점)")
         if self.best is None or score > self.best["score"]:
             self.best = {"score": score, "correct": correct, "total": total}
             print("🎉 새로운 최고 점수입니다!")
         print(LINE)
+        self.history.append({
+            "played_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "total": total,
+            "correct": correct,
+            "hints": hints,
+            "score": score,
+        })
         self.save()
 
     def add_quiz(self):
@@ -168,6 +187,14 @@ class QuizGame:
             return
         best = self.best
         print(f"🏆 최고 점수: {best['score']}점 ({best['total']}문제 중 {best['correct']}문제 정답)")
+        if self.history:
+            print(f"🗂️ 최근 기록 (전체 {len(self.history)}회 중 최근 {HISTORY_SHOWN}회)")
+            for record in self.history[-HISTORY_SHOWN:]:
+                print(
+                    f"  {record.get('played_at', '?')}  {record.get('total', '?')}문제 중 "
+                    f"{record.get('correct', '?')}문제 정답 · 힌트 {record.get('hints', 0)}회 · "
+                    f"{record.get('score', '?')}점"
+                )
 
     def delete_quiz(self):
         """목록을 보여 주고 고른 번호의 퀴즈를 지운다. 0 은 취소."""
