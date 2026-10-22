@@ -133,7 +133,46 @@ python main.py
 | `push` · `clone` · `pull` | 9절 복제 실습 |
 
 ## 9. 복제 실습(clone → push → pull)
-(실습 기록은 아래에 이어서 남긴다.)
+원문 13번 절차를 그대로 했다. 이 단계는 **로컬 초안** 단계라 GitHub 대신 같은 컴퓨터의 빈 원격 저장소
+(`git init --bare`)를 원격으로 썼다. 명령과 흐름은 GitHub 와 같고, 저장소를 GitHub 에 올릴 때 원격 주소만 바뀐다.
+
+1. 원격을 연결하고 `main` 을 `push` 한다.
+2. 원격을 다른 폴더(`E1-2-clone`)로 `clone` 한다.
+3. 복제본에서 README 에 한 줄을 추가하고 `commit` → `push` 한다.
+4. 원래 작업 폴더에서 `pull` 해 그 한 줄이 들어왔는지 확인한다.
+
+```text
+$ git remote add origin <원격 저장소>
+$ git push -u origin main
+To <원격 저장소>
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+$ git clone <원격 저장소> E1-2-clone
+(복제 완료)
+$ git add README.md
+$ git commit -m Docs: 복제본에서 README 한 줄 추가(clone·push 실습)
+[main 487f157] Docs: 복제본에서 README 한 줄 추가(clone·push 실습)
+ 1 file changed, 2 insertions(+)
+$ git push
+To <원격 저장소>
+   71de2e4..487f157  main -> main
+$ git pull
+From …/e12-remote
+   71de2e4..487f157  main       -> origin/main
+Updating 71de2e4..487f157
+Fast-forward
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)
+$ tail -2 README.md
+
+> 복제본(clone)에서 추가한 줄 — push 후 원래 작업 폴더에서 pull 로 받았다.
+$ git log --oneline -3
+487f157 Docs: 복제본에서 README 한 줄 추가(clone·push 실습)
+71de2e4 Docs: README — 개요·주제 선정 이유·실행 방법·기능 목록·파일 구조·state.json 스키마·설명
+cff0634 Docs: 실행 화면 스크린샷 4종(메뉴·풀기·추가·점수)
+```
+`pull` 이 Fast-forward 로 커밋 `487f157` 을 받아 왔고, README 끝에 복제본에서 쓴 줄이 생겼다(그 줄은 이 절로 옮겼다).
+실습이 끝난 뒤 임시 원격 연결(`origin`)은 지웠다 — GitHub 에 올리는 단계에서 실제 주소로 다시 연결한다.
 
 ## 10. 설명
 
@@ -184,5 +223,3 @@ python main.py
 - 입학 연수 2주차 시험(Python과 Git 기초)은 클래스·메뉴 프로그램·브랜치 병합을 다시 묻는다. 시험 중 하나는
   `import` 를 아예 막기 때문에, 이 게임의 퀴즈 로직(`quiz.py`, `inputs.py`)은 import 없이 짰다.
 - 본과정 「Python과 Git 심화」의 용돈 기입장 미션이 이 구조(모델 클래스 · 저장소 클래스 · 화면/입력)를 그대로 키운다.
-
-> 복제본(clone)에서 추가한 줄 — push 후 원래 작업 폴더에서 pull 로 받았다.
