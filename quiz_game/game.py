@@ -16,6 +16,7 @@ class QuizGame:
     def __init__(self, read=input):
         self.read = read
         self.quizzes = default_quizzes()
+        self.best = None  # {"score": 점수, "correct": 맞힌 수, "total": 푼 수} — 아직 안 풀었으면 None
 
     def run(self):
         while True:
@@ -31,7 +32,7 @@ class QuizGame:
             elif choice == 3:
                 self.list_quizzes()
             else:
-                print(f"🚧 「{self.MENU[choice - 1]}」 기능은 준비 중입니다.")
+                self.show_score()
 
     def show_menu(self):
         print()
@@ -61,8 +62,15 @@ class QuizGame:
             else:
                 print(f"❌ 오답입니다. 정답은 {quiz.answer_text()} 입니다.")
         score = round(correct / len(order) * 100)
+        self.record_result(score, correct, len(order))
+
+    def record_result(self, score, correct, total):
+        """결과를 보여 주고 최고 점수보다 높으면 갱신한다."""
         print(LINE)
-        print(f"🏆 결과: {len(order)}문제 중 {correct}문제 정답! ({score}점)")
+        print(f"🏆 결과: {total}문제 중 {correct}문제 정답! ({score}점)")
+        if self.best is None or score > self.best["score"]:
+            self.best = {"score": score, "correct": correct, "total": total}
+            print("🎉 새로운 최고 점수입니다!")
         print(LINE)
 
     def add_quiz(self):
@@ -92,3 +100,11 @@ class QuizGame:
         for number, quiz in enumerate(self.quizzes, 1):
             print(f"[{number}] {quiz.question}")
         print(THIN)
+
+    def show_score(self):
+        print()
+        if self.best is None:
+            print("📭 아직 퀴즈를 풀지 않았습니다. 1번 메뉴에서 도전해 보세요.")
+            return
+        best = self.best
+        print(f"🏆 최고 점수: {best['score']}점 ({best['total']}문제 중 {best['correct']}문제 정답)")
