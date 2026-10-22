@@ -1,5 +1,6 @@
 """게임 진행 — 메뉴를 보여 주고 고른 기능을 실행한다."""
 
+from .defaults import default_quizzes
 from .inputs import ask_int
 
 LINE = "=" * 40
@@ -13,6 +14,7 @@ class QuizGame:
 
     def __init__(self, read=input):
         self.read = read
+        self.quizzes = default_quizzes()
 
     def run(self):
         while True:
