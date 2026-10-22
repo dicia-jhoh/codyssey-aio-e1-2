@@ -1,33 +1,54 @@
-# 나만의 퀴즈 게임 — AI·개발 기초 상식
+<div align="center">
 
-AI올인원 입학연수 · 개발 입문 E1-2 (미션 185001)
+# 🎯 나만의 퀴즈 게임
 
-## 1. 프로젝트 개요
+### AI·개발 기초 상식을 콘솔에서 — 파이썬 클래스 · 파일 저장 · Git 브랜치
+
+![Mission](https://img.shields.io/badge/Mission-E1--2%20%C2%B7%20185001-222222)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Stdlib](https://img.shields.io/badge/Dependencies-stdlib%20only-6A6A6A)
+![Commits](https://img.shields.io/badge/Commits-24%20(1%20merge)-F05032?logo=git&logoColor=white)
+![Bonus](https://img.shields.io/badge/Bonus-5%2F5-FF385C)
+
+AI올인원 입학연수 · 개발 입문
+
+<img src="docs/screenshots/menu.png" alt="퀴즈 게임 메뉴와 잘못된 입력 처리 화면" width="560">
+
+</div>
+
+---
+
+## 📚 목차
+- [1. 프로젝트 개요](#-1-프로젝트-개요) · [2. 주제와 선정 이유](#-2-퀴즈-주제와-선정-이유) · [준비물](#-준비물) · [따라 하기](#-따라-하기)
+- [3. 실행 방법](#-3-실행-방법) · [4. 기능 목록](#-4-기능-목록) · [5. 실행 화면](#-5-실행-화면) · [6. 파일 구조](#-6-파일-구조) · [7. state.json](#-7-데이터-파일--statejson)
+- [8. Git 작업 기록](#-8-git-작업-기록) · [9. 복제 실습](#-9-복제-실습clone--push--pull) · [10. 설명](#-10-설명) · [용어 사전](#-용어-사전) · [11. 과정 연결](#-11-과정-연결)
+
+## 🧭 1. 프로젝트 개요
 파이썬 콘솔에서 돌아가는 4지선다 퀴즈 게임이다. 메뉴에서 번호를 골라 **퀴즈 풀기 · 추가 · 목록 · 점수 확인 · 삭제**를 한다.
 추가한 퀴즈와 최고 점수, 게임 기록은 프로젝트 루트의 `state.json` 에 저장되어 **껐다 켜도 남는다.**
 외부 라이브러리 없이 표준 라이브러리(`json`, `os`, `random`, `time`)만 쓴다.
 
-## 2. 퀴즈 주제와 선정 이유
+## 💡 2. 퀴즈 주제와 선정 이유
 **주제: AI·개발 기초 상식** — 터미널, Git, Docker, Python 자료형, JSON, 파일 권한, MAC 연산에서 한 문제씩(기본 7문제).
 
 입학 연수 개발 입문은 「작업실 꾸미기(터미널·Docker·Git) → 파이썬 → AI 계산기(MAC)」 순서로 간다.
 이 퀴즈는 그 길에서 꼭 외워 둬야 하는 명령과 개념을 문제로 만들었다. 게임을 만드는 동안 퀴즈 내용이
 곧 복습이 되고, 완성한 뒤에는 다음 미션을 준비하는 자기 점검 도구로 쓸 수 있다.
 
-## 준비물
+## 🧰 준비물
 - Python 3.10 이상(확인: `python --version`). 이 저장소는 Python 3.14.8 에서 개발·확인했다.
 - Git 2.x(확인: `git --version`). 개발 환경은 git 2.56.0.
 - 추가로 설치할 패키지 없음.
 - 전제 지식: 터미널에서 폴더 이동(`cd`)과 명령 실행.
 
-## 따라 하기
+## 🚶 따라 하기
 1. 저장소를 받는다: `git clone <저장소 주소> && cd E1-2`
 2. 게임을 실행한다: `python main.py`
 3. `3` 을 눌러 기본 퀴즈 7개를 확인하고, `1` → 풀 문제 수(예: `3`)를 넣어 퀴즈를 푼다. 모르면 `0` 으로 힌트를 본다.
 4. `2` 로 퀴즈를 하나 추가하고 `6` 으로 종료한다.
 5. 다시 `python main.py` 를 실행해 「📂 저장된 데이터를 불러왔습니다 (퀴즈 8개 …)」가 나오는지 확인한다.
 
-## 3. 실행 방법
+## ▶️ 3. 실행 방법
 ```bash
 python main.py
 ```
@@ -35,7 +56,7 @@ python main.py
 - `Ctrl+C` 나 `Ctrl+D`(입력 끝)를 눌러도 오류 화면 없이 **저장 후 종료**한다.
 - 데이터 파일은 `main.py` 옆의 `state.json`. 지우면 다음 실행 때 기본 퀴즈로 다시 시작한다.
 
-## 4. 기능 목록
+## 🧩 4. 기능 목록
 
 | 메뉴 | 기능 | 처리하는 예외 |
 |---|---|---|
@@ -56,15 +77,18 @@ python main.py
 | 그냥 Enter (빈 입력) | 「⚠️ 입력이 비어 있습니다 …」 후 다시 묻기 |
 | `Ctrl+C`, `Ctrl+D` | 「⚠️ 입력이 중단되어 … 저장하고 종료합니다.」 |
 | 손상된 `state.json` | 「⚠️ state.json 이 손상되어 기본 퀴즈로 복구합니다.」, 손상 파일은 `state.json.broken` 으로 보관 |
+| 읽을 수 없는 `state.json`(권한 등) | 기존 파일을 `state.json.broken` 으로 옮겨 지키고 기본 퀴즈로 시작. 옮기지도 못하면 그 실행은 **저장하지 않는다**(기존 데이터를 덮어쓰지 않게) |
+| 불가능한 최고 점수(예: 999점) | 무시하고 「기록 없음」으로 시작 — 0~100점, 맞힌 수 ≤ 푼 수만 인정 |
 
 **점수 규칙**: 100점 만점을 푼 문제 수로 나눠 한 문제 배점을 정한다. 힌트를 본 문제는 맞혀도 배점의 절반(`HINT_RATE = 0.5`).
 예: 3문제 중 1문제는 힌트 보고 정답, 1문제 정답, 1문제 오답 → 16.7 + 33.3 = 50점.
 
 **보너스 구현**: 랜덤 출제, 문제 수 선택, 힌트(감점), 퀴즈 삭제, 점수 기록 히스토리 — 5개 전부.
 
-## 5. 실행 화면
-스크린샷은 실제 프로그램 출력이다. 입력은 사람이 치는 대신 스크립트가 넣었고(입력값이 프롬프트 뒤에 그대로 찍힌다),
-그 출력을 터미널 모양 이미지로 렌더링했다.
+## 🖥️ 5. 실행 화면
+> [!NOTE]
+> 스크린샷은 실제 프로그램 출력이다. 입력은 사람이 치는 대신 스크립트가 넣었고(입력값이 프롬프트 뒤에 그대로 찍힌다),
+> 그 출력을 터미널 모양 이미지로 렌더링했다.
 
 | 메뉴·잘못된 입력 | 퀴즈 풀기(힌트) |
 |---|---|
@@ -78,7 +102,7 @@ python main.py
 |---|---|
 | ![dev_env](docs/screenshots/dev_env.png) | ![git_log_graph](docs/screenshots/git_log_graph.png) |
 
-## 6. 파일 구조
+## 📁 6. 파일 구조
 ```text
 .
 ├── main.py              # 진입점 — state.json 경로를 정하고 게임 실행, Ctrl+C·EOF 처리
@@ -94,7 +118,42 @@ python main.py
 클래스 3개가 역할을 나눈다: **Quiz**(데이터 한 건) · **QuizGame**(게임 진행) · **StateStore**(파일 저장).
 `json`·`os` 를 쓰는 곳은 `storage.py` 하나뿐이라, 저장 방식을 바꿔도 게임 코드는 그대로다.
 
-## 7. 데이터 파일 — `state.json`
+```mermaid
+classDiagram
+    direction LR
+    class Quiz {
+        +str question
+        +list choices
+        +int answer
+        +str hint
+        +display(number)
+        +is_correct(choice) bool
+        +to_dict() dict
+        +from_dict(data) Quiz
+    }
+    class QuizGame {
+        +list quizzes
+        +dict best
+        +list history
+        +run()
+        +play()
+        +add_quiz()
+        +list_quizzes()
+        +show_score()
+        +delete_quiz()
+        +load()
+        +save()
+    }
+    class StateStore {
+        +str path
+        +load() tuple
+        +save(data) tuple
+    }
+    QuizGame "1" o-- "*" Quiz : 퀴즈 목록
+    QuizGame --> StateStore : 저장·불러오기
+```
+
+## 💾 7. 데이터 파일 — `state.json`
 - **경로**: 프로젝트 루트(`main.py` 와 같은 폴더). `main.py` 가 자기 위치를 기준으로 경로를 만들어 어느 폴더에서 실행해도 같은 파일을 쓴다.
 - **역할**: 퀴즈 목록, 최고 점수, 게임 기록을 보관해 프로그램을 다시 켜도 이어지게 한다.
 - **인코딩**: UTF-8(한글 그대로 저장, `ensure_ascii=False`).
@@ -126,9 +185,29 @@ python main.py
 
 형식이 틀린 퀴즈 항목은 건너뛰고(개수 안내), `hint` 가 없는 예전 파일도 그대로 읽는다.
 
-## 8. Git 작업 기록
+## 🌿 8. Git 작업 기록
 기능 하나를 끝낼 때마다 커밋했다(`Feat:` 기능 · `Fix:` 버그 · `Refactor:` 구조 · `Docs:` 문서 · `Chore:` 설정).
 퀴즈 풀기는 `feature/play` 브랜치에서 만들고 `main` 으로 병합했다(`git checkout -b feature/play` → 작업·커밋 → `git checkout main` → `git merge --no-ff feature/play`).
+
+```mermaid
+gitGraph
+    commit id: "Docs: README 초안"
+    commit id: "Feat: 메뉴·입력 검증"
+    commit id: "Feat: Quiz 클래스"
+    commit id: "Feat: 기본 퀴즈 7개"
+    branch feature/play
+    checkout feature/play
+    commit id: "Feat: 퀴즈 풀기"
+    checkout main
+    merge feature/play id: "Merge: feature/play"
+    commit id: "Feat: 추가·목록·점수"
+    commit id: "Feat: state.json 저장·복구"
+    commit id: "Fix: Ctrl+C·EOF"
+    commit id: "Refactor: 메뉴 표"
+    commit id: "Feat: 보너스 5종"
+    commit id: "Docs: README·스크린샷"
+```
+<sub>주요 커밋만 추린 그림이다. 전체 24개는 아래 `git log --oneline --graph` 캡처에 있다.</sub>
 
 | Git 명령 | 이 저장소에서 쓴 곳 |
 |---|---|
@@ -138,9 +217,22 @@ python main.py
 | `checkout` | `feature/play` 브랜치 만들기·이동, `main` 으로 돌아오기 |
 | `push` · `clone` · `pull` | 9절 복제 실습 |
 
-## 9. 복제 실습(clone → push → pull)
-원문 13번 절차를 그대로 했다. 이 단계는 **로컬 초안** 단계라 GitHub 대신 같은 컴퓨터의 빈 원격 저장소
-(`git init --bare`)를 원격으로 썼다. 명령과 흐름은 GitHub 와 같고, 저장소를 GitHub 에 올릴 때 원격 주소만 바뀐다.
+## 🔁 9. 복제 실습(clone → push → pull)
+> [!IMPORTANT]
+> 원문 13번 절차를 그대로 했다. 이 단계는 **로컬 초안** 단계라 GitHub 대신 같은 컴퓨터의 빈 원격 저장소
+> (`git init --bare`)를 원격으로 썼다. 명령과 흐름은 GitHub 와 같고, 저장소를 GitHub 에 올릴 때 원격 주소만 바뀐다.
+
+```mermaid
+sequenceDiagram
+    participant W as 작업 폴더(E1-2)
+    participant R as 원격(bare)
+    participant C as 복제본(E1-2-clone)
+    W->>R: git push -u origin main
+    R->>C: git clone
+    C->>C: README 한 줄 추가 · git commit
+    C->>R: git push
+    R->>W: git pull (Fast-forward)
+```
 
 1. 원격을 연결하고 `main` 을 `push` 한다.
 2. 원격을 다른 폴더(`E1-2-clone`)로 `clone` 한다.
@@ -180,7 +272,7 @@ cff0634 Docs: 실행 화면 스크린샷 4종(메뉴·풀기·추가·점수)
 `pull` 이 Fast-forward 로 커밋 `487f157` 을 받아 왔고, README 끝에 복제본에서 쓴 줄이 생겼다(그 줄은 이 절로 옮겼다).
 실습이 끝난 뒤 임시 원격 연결(`origin`)은 지웠다 — GitHub 에 올리는 단계에서 실제 주소로 다시 연결한다.
 
-## 10. 설명
+## 📝 10. 설명
 
 ### Python 기초
 | 주제 | 설명과 이 코드에서의 예 |
@@ -218,14 +310,14 @@ cff0634 Docs: 실행 화면 스크린샷 4종(메뉴·풀기·추가·점수)
 | `clone` | 원격 저장소 전체(이력 포함)를 내 컴퓨터에 복사한다. |
 | 브랜치·병합 | 브랜치는 본선(`main`)을 건드리지 않고 따로 작업하는 갈래. 다 되면 `merge` 로 본선에 합친다(8절). |
 
-## 용어 사전
+## 📖 용어 사전
 - **4지선다**: 선택지 4개 중 하나를 고르는 문제 형식.
 - **스테이징**: 다음 커밋에 넣을 변경을 골라 두는 단계(`git add`).
 - **원격 저장소**: 내 컴퓨터 밖(GitHub 등)에 있는 같은 저장소. `push`·`pull` 의 상대.
 - **EOF**: 입력의 끝(End Of File). 터미널에서 `Ctrl+D`.
 - **원자적 저장**: 다 쓰거나 아예 안 쓰거나 — 임시 파일에 쓴 뒤 한 번에 바꿔치기하는 저장 방식.
 
-## 11. 과정 연결
+## 🔗 11. 과정 연결
 - 입학 연수 2주차 시험(Python과 Git 기초)은 클래스·메뉴 프로그램·브랜치 병합을 다시 묻는다. 시험 중 하나는
   `import` 를 아예 막기 때문에, 이 게임의 퀴즈 로직(`quiz.py`, `inputs.py`)은 import 없이 짰다.
 - 본과정 「Python과 Git 심화」의 용돈 기입장 미션이 이 구조(모델 클래스 · 저장소 클래스 · 화면/입력)를 그대로 키운다.
