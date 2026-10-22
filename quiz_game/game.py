@@ -8,6 +8,7 @@ from .quiz import Quiz
 
 LINE = "=" * 40
 THIN = "-" * 40
+HINT_RATE = 0.5  # 힌트를 본 문제는 맞혀도 배점의 절반만 준다
 
 
 class QuizGame:
@@ -92,17 +93,32 @@ class QuizGame:
         print()
         print(f"📝 퀴즈를 시작합니다! (총 {count}문제, 순서는 무작위)")
         correct = 0
+        earned = 0.0
+        per_question = 100 / count
         for number, quiz in enumerate(order, 1):
             print(THIN)
             quiz.display(number)
-            answer = ask_int("정답 입력: ", 1, quiz.CHOICE_COUNT, self.read)
+            answer, used_hint = self.ask_answer(quiz)
             if quiz.is_correct(answer):
                 correct += 1
-                print("✅ 정답입니다!")
+                earned += per_question * (HINT_RATE if used_hint else 1)
+                print("✅ 정답입니다!" + (" (힌트 사용 — 배점 절반)" if used_hint else ""))
             else:
                 print(f"❌ 오답입니다. 정답은 {quiz.answer_text()} 입니다.")
-        score = round(correct / len(order) * 100)
-        self.record_result(score, correct, len(order))
+        self.record_result(round(earned), correct, count)
+
+    def ask_answer(self, quiz):
+        """정답 번호를 받는다. 힌트가 있는 문제는 0 을 넣으면 힌트를 한 번 보여 준다."""
+        used_hint = False
+        while True:
+            if quiz.hint and not used_hint:
+                answer = ask_int("정답 입력 (힌트는 0): ", 0, quiz.CHOICE_COUNT, self.read)
+            else:
+                answer = ask_int("정답 입력: ", 1, quiz.CHOICE_COUNT, self.read)
+            if answer != 0:
+                return answer, used_hint
+            used_hint = True
+            print(f"💡 힌트: {quiz.hint} (이 문제는 맞혀도 배점의 절반만 받습니다)")
 
     def record_result(self, score, correct, total):
         """결과를 보여 주고 최고 점수보다 높으면 갱신한다."""
@@ -127,7 +143,8 @@ class QuizGame:
                 continue
             choices.append(choice)
         answer = ask_int(f"정답 번호 (1-{Quiz.CHOICE_COUNT}): ", 1, Quiz.CHOICE_COUNT, self.read)
-        self.quizzes.append(Quiz(question, choices, answer))
+        hint = self.read("힌트 (없으면 Enter): ").strip()
+        self.quizzes.append(Quiz(question, choices, answer, hint))
         self.save()
         print("✅ 퀴즈가 추가되었습니다!")
 
