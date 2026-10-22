@@ -72,6 +72,12 @@ python main.py
 | **퀴즈 추가·목록** | **점수 확인·재시작 후 데이터 유지** |
 | ![add_quiz](docs/screenshots/add_quiz.png) | ![score](docs/screenshots/score.png) |
 
+**개발 환경과 Git 이력**
+
+| 개발 환경(Python·Git 설정) | `git log --oneline --graph` |
+|---|---|
+| ![dev_env](docs/screenshots/dev_env.png) | ![git_log_graph](docs/screenshots/git_log_graph.png) |
+
 ## 6. 파일 구조
 ```text
 .
