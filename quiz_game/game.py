@@ -20,6 +20,7 @@ class QuizGame:
         ("퀴즈 추가", "add_quiz"),
         ("퀴즈 목록", "list_quizzes"),
         ("점수 확인", "show_score"),
+        ("퀴즈 삭제", "delete_quiz"),
         ("종료", None),
     )
 
@@ -167,6 +168,20 @@ class QuizGame:
             return
         best = self.best
         print(f"🏆 최고 점수: {best['score']}점 ({best['total']}문제 중 {best['correct']}문제 정답)")
+
+    def delete_quiz(self):
+        """목록을 보여 주고 고른 번호의 퀴즈를 지운다. 0 은 취소."""
+        self.list_quizzes()
+        if not self.quizzes:
+            return
+        total = len(self.quizzes)
+        number = ask_int(f"삭제할 퀴즈 번호 (1-{total}, 취소는 0): ", 0, total, self.read)
+        if number == 0:
+            print("↩️ 삭제를 취소했습니다.")
+            return
+        removed = self.quizzes.pop(number - 1)
+        self.save()
+        print(f"🗑️ 삭제했습니다: {removed.question}")
 
 
 def _is_best(value):
