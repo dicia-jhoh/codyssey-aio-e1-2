@@ -188,7 +188,8 @@ class QuizGame:
         best = self.best
         print(f"🏆 최고 점수: {best['score']}점 ({best['total']}문제 중 {best['correct']}문제 정답)")
         if self.history:
-            print(f"🗂️ 최근 기록 (전체 {len(self.history)}회 중 최근 {HISTORY_SHOWN}회)")
+            shown = min(len(self.history), HISTORY_SHOWN)
+            print(f"🗂️ 최근 기록 {shown}회 (전체 {len(self.history)}회)")
             for record in self.history[-HISTORY_SHOWN:]:
                 print(
                     f"  {record.get('played_at', '?')}  {record.get('total', '?')}문제 중 "
