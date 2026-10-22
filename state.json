@@ -1,0 +1,75 @@
+{
+  "quizzes": [
+    {
+      "question": "터미널에서 지금 있는 폴더의 전체 경로를 출력하는 명령은?",
+      "choices": [
+        "ls",
+        "pwd",
+        "cd",
+        "mkdir"
+      ],
+      "answer": 2
+    },
+    {
+      "question": "Git 에서 바뀐 파일을 다음 커밋에 담는(스테이징하는) 명령은?",
+      "choices": [
+        "git commit",
+        "git push",
+        "git add",
+        "git init"
+      ],
+      "answer": 3
+    },
+    {
+      "question": "Docker 에서 멈춘 컨테이너까지 모두 보여 주는 명령은?",
+      "choices": [
+        "docker images",
+        "docker ps -a",
+        "docker run",
+        "docker logs"
+      ],
+      "answer": 2
+    },
+    {
+      "question": "파이썬에서 '키: 값' 쌍으로 데이터를 저장하는 자료형은?",
+      "choices": [
+        "list",
+        "tuple",
+        "dict",
+        "str"
+      ],
+      "answer": 3
+    },
+    {
+      "question": "신경망 계산의 대부분을 차지하는 '곱해서 더하기' 연산의 이름은?",
+      "choices": [
+        "MAC",
+        "CPU",
+        "API",
+        "SQL"
+      ],
+      "answer": 1
+    },
+    {
+      "question": "JSON 파일을 열어 파이썬 객체로 읽어 오는 함수는?",
+      "choices": [
+        "json.dumps",
+        "json.load",
+        "json.write",
+        "json.open"
+      ],
+      "answer": 2
+    },
+    {
+      "question": "파일 권한 755 에서 '그룹' 사용자가 가진 권한은?",
+      "choices": [
+        "읽기·쓰기·실행",
+        "읽기·실행",
+        "읽기만",
+        "권한 없음"
+      ],
+      "answer": 2
+    }
+  ],
+  "best_score": null
+}

@@ -13,16 +13,50 @@ class QuizGame:
 
     MENU = ("퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료")
 
-    def __init__(self, read=input):
+    def __init__(self, store, read=input):
+        self.store = store
         self.read = read
-        self.quizzes = default_quizzes()
+        self.quizzes = []
         self.best = None  # {"score": 점수, "correct": 맞힌 수, "total": 푼 수} — 아직 안 풀었으면 None
 
+    def load(self):
+        """state.json 을 읽는다. 없거나 망가졌으면 기본 퀴즈로 시작하고 바로 저장한다."""
+        data, message = self.store.load()
+        if data is None:
+            print(message)
+            self.quizzes = default_quizzes()
+            self.best = None
+            self.save()
+            return
+        self.quizzes = []
+        skipped = 0
+        for item in data["quizzes"]:
+            try:
+                self.quizzes.append(Quiz.from_dict(item))
+            except ValueError:
+                skipped += 1
+        self.best = data.get("best_score") if _is_best(data.get("best_score")) else None
+        best_text = f"{self.best['score']}점" if self.best else "기록 없음"
+        print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고점수 {best_text})")
+        if skipped:
+            print(f"⚠️ 형식이 맞지 않는 퀴즈 {skipped}개는 건너뛰었습니다.")
+
+    def save(self):
+        ok, message = self.store.save(self.to_state())
+        if not ok:
+            print(message)
+        return ok
+
+    def to_state(self):
+        return {"quizzes": [quiz.to_dict() for quiz in self.quizzes], "best_score": self.best}
+
     def run(self):
+        self.load()
         while True:
             self.show_menu()
             choice = ask_int("선택: ", 1, len(self.MENU), self.read)
             if choice == len(self.MENU):
+                self.save()
                 print("👋 게임을 종료합니다.")
                 return
             if choice == 1:
@@ -72,6 +106,7 @@ class QuizGame:
             self.best = {"score": score, "correct": correct, "total": total}
             print("🎉 새로운 최고 점수입니다!")
         print(LINE)
+        self.save()
 
     def add_quiz(self):
         """문제·선택지 4개·정답 번호를 받아 새 퀴즈를 등록한다."""
@@ -87,6 +122,7 @@ class QuizGame:
             choices.append(choice)
         answer = ask_int(f"정답 번호 (1-{Quiz.CHOICE_COUNT}): ", 1, Quiz.CHOICE_COUNT, self.read)
         self.quizzes.append(Quiz(question, choices, answer))
+        self.save()
         print("✅ 퀴즈가 추가되었습니다!")
 
     def list_quizzes(self):
@@ -108,3 +144,13 @@ class QuizGame:
             return
         best = self.best
         print(f"🏆 최고 점수: {best['score']}점 ({best['total']}문제 중 {best['correct']}문제 정답)")
+
+
+def _is_best(value):
+    """best_score 가 {"score", "correct", "total"} 정수 묶음인지 확인한다."""
+    if not isinstance(value, dict):
+        return False
+    return all(
+        isinstance(value.get(key), int) and not isinstance(value.get(key), bool)
+        for key in ("score", "correct", "total")
+    )
