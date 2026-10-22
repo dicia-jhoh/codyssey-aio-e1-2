@@ -11,7 +11,14 @@ THIN = "-" * 40
 class QuizGame:
     """퀴즈 목록과 점수를 들고 메뉴를 돌린다."""
 
-    MENU = ("퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료")
+    # (메뉴 이름, 실행할 메서드 이름). 마지막 항목은 종료 — 메뉴를 늘릴 때 이 표 한 줄만 고친다
+    MENU = (
+        ("퀴즈 풀기", "play"),
+        ("퀴즈 추가", "add_quiz"),
+        ("퀴즈 목록", "list_quizzes"),
+        ("점수 확인", "show_score"),
+        ("종료", None),
+    )
 
     def __init__(self, store, read=input):
         self.store = store
@@ -55,25 +62,19 @@ class QuizGame:
         while True:
             self.show_menu()
             choice = ask_int("선택: ", 1, len(self.MENU), self.read)
-            if choice == len(self.MENU):
+            action = self.MENU[choice - 1][1]
+            if action is None:
                 self.save()
                 print("👋 게임을 종료합니다.")
                 return
-            if choice == 1:
-                self.play()
-            elif choice == 2:
-                self.add_quiz()
-            elif choice == 3:
-                self.list_quizzes()
-            else:
-                self.show_score()
+            getattr(self, action)()
 
     def show_menu(self):
         print()
         print(LINE)
         print("       🎯 나만의 퀴즈 게임 🎯")
         print(LINE)
-        for number, name in enumerate(self.MENU, 1):
+        for number, (name, _) in enumerate(self.MENU, 1):
             print(f"{number}. {name}")
         print(LINE)
 
