@@ -15,8 +15,11 @@ def main():
     except (KeyboardInterrupt, EOFError):
         # Ctrl+C 나 입력 끝(Ctrl+D·파이프 종료)에도 트레이스백 대신 저장하고 끝낸다
         print()
-        print("⚠️ 입력이 중단되어 지금까지의 내용을 저장하고 종료합니다.")
-        game.save()
+        if game.loaded:
+            print("⚠️ 입력이 중단되어 지금까지의 내용을 저장하고 종료합니다.")
+            game.save()
+        else:
+            print("⚠️ 불러오는 중에 중단되어 저장하지 않고 종료합니다.")
 
 
 if __name__ == "__main__":

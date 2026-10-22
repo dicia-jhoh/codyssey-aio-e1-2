@@ -33,6 +33,7 @@ class QuizGame:
         self.quizzes = []
         self.best = None  # {"score": 점수, "correct": 맞힌 수, "total": 푼 수} — 아직 안 풀었으면 None
         self.history = []  # 게임마다 {"played_at", "total", "correct", "hints", "score"}
+        self.loaded = False  # load() 가 끝나기 전에 중단되면 반쯤 읽은 상태를 저장하지 않는다
 
     def load(self):
         """state.json 을 읽는다. 없거나 망가졌으면 기본 퀴즈로 시작하고 바로 저장한다."""
@@ -42,6 +43,7 @@ class QuizGame:
             self.quizzes = default_quizzes()
             self.best = None
             self.history = []
+            self.loaded = True
             self.save()
             return
         self.quizzes = []
@@ -58,6 +60,7 @@ class QuizGame:
         print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고점수 {best_text})")
         if skipped:
             print(f"⚠️ 형식이 맞지 않는 퀴즈 {skipped}개는 건너뛰었습니다.")
+        self.loaded = True
 
     def save(self):
         ok, message = self.store.save(self.to_state())
@@ -213,10 +216,14 @@ class QuizGame:
 
 
 def _is_best(value):
-    """best_score 가 {"score", "correct", "total"} 정수 묶음인지 확인한다."""
+    """best_score 가 게임에서 나올 수 있는 {"score", "correct", "total"} 묶음인지 확인한다.
+
+    범위 밖 값(예: 999점)을 받아들이면 어떤 게임으로도 갱신되지 않는 최고 점수가 남는다.
+    """
     if not isinstance(value, dict):
         return False
-    return all(
-        isinstance(value.get(key), int) and not isinstance(value.get(key), bool)
-        for key in ("score", "correct", "total")
-    )
+    numbers = [value.get(key) for key in ("score", "correct", "total")]
+    if not all(isinstance(n, int) and not isinstance(n, bool) for n in numbers):
+        return False
+    score, correct, total = numbers
+    return 0 <= score <= 100 and total >= 1 and 0 <= correct <= total
