@@ -250,6 +250,17 @@ OK
 |---|---|
 | ![dev_env](docs/screenshots/dev_env.png) | ![git_log_graph](docs/screenshots/git_log_graph.png) |
 
+**스크린샷 파일 — 어느 요구를 보여 주나**
+
+| 파일 | 보여 주는 것 |
+|---|---|
+| `docs/screenshots/menu.png` | 메뉴 6개, 빈 입력·문자·범위 밖 입력에 안내 후 다시 묻기 |
+| `docs/screenshots/play.png` | 퀴즈 풀기, 힌트 사용(배점 절반), 정답·오답 안내 |
+| `docs/screenshots/add_quiz.png` | 퀴즈 추가(문제·선택지 4개·정답·힌트 입력) 뒤 목록에 나타남 |
+| `docs/screenshots/score.png` | 점수 확인, 프로그램을 다시 켠 뒤에도 최고 점수·기록 유지 |
+| `docs/screenshots/dev_env.png` | Python·Git 버전, `git config` 사용자 설정, 브랜치 목록 |
+| `docs/screenshots/git_log_graph.png` | `git log --oneline --graph` — 브랜치·병합 이력 |
+
 ## 📁 6. 파일 구조
 > 🧒 프로그램을 역할별로 파일 여러 개에 나눠 담았다. 식당으로 치면 **Quiz = 메뉴판 한 장, QuizGame = 홀 직원(손님 응대), StateStore = 창고 담당(공책 보관)** 이다.
 
@@ -304,6 +315,34 @@ classDiagram
     QuizGame --> StateStore : 저장·불러오기
 ```
 
+### 6-1. 누가 무엇을 책임지나 — 오류 안내는 화면 쪽에서만 찍는다
+
+| 계층 | 맡는 일 | 문제가 생기면 |
+|---|---|---|
+| `inputs.py` | 키보드 입력을 숫자·글자로 받기 | **직접 안내를 찍고 다시 묻는다**(빈 입력·문자·범위 밖). 밖으로 예외를 내지 않는다 |
+| `quiz.py` | 문제 한 건의 값 검사 | `ValueError` 를 던지기만 한다. 화면에 찍지 않는다 |
+| `storage.py` | 파일 읽기·쓰기 | 예외 대신 `(결과, 안내 문구)` 를 돌려준다. 찍지 않는다 |
+| `game.py` | 메뉴 진행 | 위 두 곳의 결과를 받아 **안내 문구를 찍는다**(건너뛴 퀴즈 수, 저장 실패) |
+| `main.py` | 프로그램 시작·끝 | Ctrl+C·입력 끝(EOF)을 잡아 저장 후 종료한다 |
+
+이렇게 나눈 이유: `quiz.py`·`storage.py` 가 화면에 직접 찍지 않아서, 테스트가 출력 없이 반환값만으로 검사할 수 있다.
+
+**주요 함수의 입출력(인터페이스)**
+
+| 함수 | 받는 것 | 돌려주는 것 |
+|---|---|---|
+| `ask_int(prompt, low, high, read=input)` | 안내 문구, 허용 범위 | `low ≤ 값 ≤ high` 인 `int`(맞을 때까지 다시 묻는다) |
+| `ask_text(prompt, read=input)` | 안내 문구 | 앞뒤 공백을 뺀 빈칸 아닌 `str` |
+| `Quiz(question, choices, answer, hint="")` | 문제, 선택지 4개, 정답 1~4, 힌트 | `Quiz` — 값이 틀리면 `ValueError` |
+| `Quiz.from_dict(data)` / `to_dict()` | `dict` / — | `Quiz` / `dict`(state.json 한 항목) |
+| `StateStore.load()` | — | `(dict 또는 None, 안내 문구)` — `None` 이면 첫 실행·손상·읽기 실패 |
+| `StateStore.save(data)` | `dict` | `(성공 여부 bool, 안내 문구)` |
+
+`read=input` 자리에 가짜 입력 함수를 넣을 수 있어서, 테스트가 키보드 없이 입력 순서를 흉내 낸다.
+
+**메뉴를 늘리는 규칙 — 표 한 줄 + 메서드 하나.** `QuizGame.MENU` 에 `("이름", "메서드명")` 을 「종료」 바로 위에 넣고,
+같은 이름의 메서드를 `QuizGame` 에 만든다. 번호 매기기·범위 검사(`ask_int`)·실행은 이 표를 그대로 따라간다.
+
 ## 💾 7. 데이터 파일 — `state.json`
 > 🧒 게임의 **공책**이다. 메모장으로 열어 보면 퀴즈와 점수가 글자로 적혀 있다. 이 파일이 있어서 껐다 켜도 기억한다.
 
@@ -337,6 +376,42 @@ classDiagram
 | `history` | list | 게임마다 시각·푼 수·맞힌 수·힌트 사용 수·점수 |
 
 형식이 틀린 퀴즈 항목은 건너뛰고(개수 안내), `hint` 가 없는 예전 파일도 그대로 읽는다.
+
+### 7-1. 어떤 파일을 읽고, 무엇을 남기나
+
+| 파일 | 언제 생기나 | 읽나 |
+|---|---|---|
+| `state.json` | 저장할 때마다 | **이 파일 하나만 읽는다** |
+| `state.json.tmp` | 저장 중 잠깐(다 쓰면 `state.json` 으로 바뀌어 사라짐) | 읽지 않는다. 저장이 끊겨 남아 있어도 다음 저장이 덮어쓴다 |
+| `state.json.broken` | 손상·읽기 실패 때 원본을 옮겨 둠 | 읽지 않는다. 사람이 열어 고친 뒤 이름을 `state.json` 으로 바꿔 되살린다 |
+
+**보관 정책 — 손상 파일은 마지막 1개만 남는다(실측).** 두 번 연달아 망가뜨려 봤다:
+```console
+$ (state.json 에 "{첫번째 손상" 을 쓰고 불러오기)
+⚠️ state.json 이 손상되어 기본 퀴즈로 복구합니다. (손상된 파일은 state.json.broken 로 보관)
+$ (state.json 에 "{두번째 손상" 을 쓰고 불러오기)
+⚠️ state.json 이 손상되어 기본 퀴즈로 복구합니다. (손상된 파일은 state.json.broken 로 보관)
+$ ls ; cat state.json.broken
+state.json.broken
+{두번째 손상
+```
+`os.replace` 가 같은 이름을 덮어쓰므로 첫 번째 손상본은 사라진다. 여러 세대를 남기려면 `.broken` 이름에
+시각을 붙이면 된다(예: `state.json.20261027-1530.broken`). 이 게임은 퀴즈 몇십 개라 한 세대로 충분하다고 봤다.
+
+**필드를 늘릴 때의 호환 규칙.** `hint` 가 실제로 이 방식으로 추가됐다 — `from_dict()` 가 `data.get("hint", "")`
+로 읽어서 `hint` 가 없는 옛 파일도 그대로 열린다. 새 필드(예: `category`)도 같은 규칙을 따른다.
+1. 읽을 때는 **기본값을 준다**(`data.get("category", "기타")`) — 옛 파일이 깨지지 않는다.
+2. 쓸 때는 항상 새 필드를 넣는다 — 한 번 저장하면 파일이 새 형식으로 올라간다.
+3. 필드의 뜻을 바꾸거나 지울 때만 최상위에 `"version": 2` 를 두고 `load()` 에서 버전별로 변환한다.
+
+**SQLite 로 옮긴다면 — 절차.** 파일·`json` 을 만지는 곳이 `storage.py` 하나라 바꿀 곳도 거기 하나다.
+1. `StateStore` 와 같은 `load()`·`save(data)` 를 가진 `SqliteStore` 를 만든다(반환 형식은 그대로).
+2. 한 번만 도는 옮기기 함수가 `StateStore(path).load()` 로 읽은 dict 를 표 세 개(`quizzes`·`best_score`·`history`)에 넣는다.
+3. `main.py` 의 `StateStore(STATE_PATH)` 한 줄을 `SqliteStore(...)` 로 바꾼다. `game.py`·`quiz.py` 는 고치지 않는다.
+4. 옮긴 뒤 퀴즈 수·최고 점수가 같은지 비교하고, `state.json` 은 백업으로 남긴다.
+
+지금은 JSON 이 맞다고 봤다. 데이터가 작고(퀴즈 수십 개), 사람이 메모장으로 열어 볼 수 있다는 장점이 크다.
+퀴즈가 수천 개로 늘거나 여러 사람이 동시에 쓰면 그때 SQLite 로 옮긴다.
 
 ## 🌿 8. Git 작업 기록
 > 🧒 Git 은 **게임의 세이브 포인트**다. 기능 하나를 끝낼 때마다 「여기까지 저장」(커밋)을 했고, 퀴즈 풀기 기능은 본선(`main`)과 **갈래를 나눠서**(브랜치) 만든 뒤 다시 합쳤다.
